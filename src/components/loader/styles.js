@@ -4,12 +4,12 @@ import { height, width } from '~utills/Dimension';
 const styles = StyleSheet.create({
     container: {
         backgroundColor: AppColors.white,
-        width: width(50),
+        width: width(100),
         paddingVertical: height(3),
+        height:height(100),
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
-        borderRadius: width(3),
         flexDirection: 'row',
     },
     text: {

@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
     width: width(7),
   },
   flash2: {
-    
     height: height(7),
     width: width(7),
   },
@@ -52,6 +51,16 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: height(2.8),
     left: width(2),
+  },
+  container: {
+    backgroundColor: AppColors.white,
+    width: width(100),
+    paddingVertical: height(3),
+    height: height(100),
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    flexDirection: "row",
   },
 });
 export default styles;

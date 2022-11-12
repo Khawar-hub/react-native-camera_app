@@ -1,11 +1,12 @@
 import React from 'react';
-import {ActivityIndicator, Text, View} from 'react-native';
+import {ActivityIndicator, Text, View,Image} from 'react-native';
 import Modal from 'react-native-modal';
 import {useSelector} from 'react-redux';
 import { selectLoader } from '~redux/slices/config';
 import AppColors from '~utills/AppColors';
+import { height, width } from '~utills/Dimension';
 import styles from './styles';
-export default function Loader() {
+export default function Loader({uri}) {
   const appLoader = useSelector(selectLoader);
   return (
     <Modal
@@ -16,8 +17,7 @@ export default function Loader() {
       isVisible={appLoader}
       backdropOpacity={0.4}>
       <View style={styles.container}>
-        <ActivityIndicator size="small" color={AppColors.black} />
-        <Text style={styles.text}>Loading</Text>
+        <Image source={{uri:uri}} resizeMode="cover" style={{height:height(100),width:width(100)}} />
       </View>
     </Modal>
   );
