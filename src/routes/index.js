@@ -7,6 +7,7 @@ import { Loader } from '~components';
 import ScreenNames from './routes';
 import { HomeScreen } from '~screens/app';
 import { selectIsLoggedIn } from '~redux/slices/user';
+import { CaptureButton } from '~screens/auth/login';
 const Stack = createNativeStackNavigator();
 
 export default function Routes() {

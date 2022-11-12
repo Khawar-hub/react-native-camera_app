@@ -6,14 +6,52 @@ const styles = StyleSheet.create({
   mainViewContainer: {
     flex: 1,
     backgroundColor: AppColors.white,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     color: AppColors.black,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: width(4),
-    marginBottom: height(2)
-  }
+    marginBottom: height(2),
+  },
+  rotate: {
+    position: "absolute",
+    left: width(3),
+  },
+  flash: {
+    position: "absolute",
+    right: width(3),
+    height: height(7),
+    width: width(7),
+  },
+  flash2: {
+    
+    height: height(7),
+    width: width(7),
+  },
+  zoomin: {
+    position: "absolute",
+    top: width(3),
+  },
+  zoomout: {
+    position: "absolute",
+    bottom: width(3),
+  },
+  gallery: {
+    position: "absolute",
+    top: height(3.4),
+    left: width(5),
+  },
+  video: {
+    position: "absolute",
+    top: height(3.4),
+    right: width(16),
+  },
+  more: {
+    position: "absolute",
+    top: height(2.8),
+    left: width(2),
+  },
 });
 export default styles;
