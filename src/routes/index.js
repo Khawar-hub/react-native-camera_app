@@ -8,9 +8,12 @@ import ScreenNames from './routes';
 import { HomeScreen } from '~screens/app';
 import { selectIsLoggedIn } from '~redux/slices/user';
 import { CaptureButton } from '~screens/auth/login';
+import { Camera } from 'react-native-vision-camera';
+
 const Stack = createNativeStackNavigator();
 
 export default function Routes() {
+ 
   const isLogin = useSelector(selectIsLoggedIn)
   return (
     <NavigationContainer>

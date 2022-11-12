@@ -33,7 +33,17 @@ export default function LoginScreen() {
   const [zoom, setzoom] = useState(0);
   const[photos,setphotos]=useState([])
   const device = toggle?devices.front: devices.back;
-  
+   React.useEffect(() => {
+     getPermission();
+   }, []);
+   const getPermission = async () => {
+
+   
+       const newCameraPermission = await Camera.requestCameraPermission();
+       const newMicrophonePermission =
+         await Camera.requestMicrophonePermission();
+     
+   };
   const takePhoto = async () => {
     const photo = await camera.current.takePhoto({
       flash: flash,
