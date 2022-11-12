@@ -8,6 +8,8 @@ import {
   Modal,
   PermissionsAndroid,
   Alert,
+  FlatList,
+  Share,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import { Camera, useCameraDevices } from "react-native-vision-camera";
@@ -27,9 +29,11 @@ export default function LoginScreen() {
   const [modal, setmodal] = useState(false);
   const [isrecording, setisrecording] = useState(false);
   const [flash, setflash] = useState("off");
+  const [toggle,settoggle]=useState(false)
   const [zoom, setzoom] = useState(0);
-  const device = devices.back;
-
+  const[photos,setphotos]=useState([])
+  const device = toggle?devices.front: devices.back;
+  
   const takePhoto = async () => {
     const photo = await camera.current.takePhoto({
       flash: flash,
@@ -62,7 +66,34 @@ export default function LoginScreen() {
       onRecordingError: (error) => {Alert.alert('Video stopped')},
     });
   }
+const getPhotos=async()=>{
+    CameraRoll.getPhotos({
+      first: 100,
+      assetType: "Photos",
+    })
+      .then((r) => {
+       setphotos(r.edges)
+      })
+      .catch((err) => {
+        //Error Loading Images
+      });
 
+}
+ const renderPhotos = ({item,index}) => {
+    return (
+      <TouchableOpacity
+      key={index}
+        activeOpacity={0.8}
+       
+        style={styles.imageBorder}>
+        <Image
+          style={styles.image}
+          source={{uri: item.node.image.uri}}
+          resizeMode="cover"
+        />
+      </TouchableOpacity>
+    );
+  };
   if (device == null) return <ActivityIndicator size={10} color="red" />;
   return (
     <>
@@ -76,6 +107,7 @@ export default function LoginScreen() {
           enableZoomGesture
           photo={true}
           zoom={zoom}
+          
         />
         {isrecording && (
           <View
@@ -115,7 +147,10 @@ export default function LoginScreen() {
             justifyContent: "center",
           }}
         >
-          <TouchableOpacity style={styles.rotate}>
+          <TouchableOpacity onPress={()=>{
+            settoggle(!toggle)
+
+          }} style={styles.rotate}>
             <Image
               source={require("../../../assets/images/circle_right_alt.png")}
               resizeMode="contain"
@@ -196,22 +231,25 @@ export default function LoginScreen() {
             bottom: 0,
           }}
         >
-          <TouchableOpacity style={styles.gallery}>
+          <TouchableOpacity onPress={()=>{
+
+            getPhotos()
+            setmodal(true)
+            }} style={styles.gallery}>
             <Image
               source={require("../../../assets/images/picture.png")}
               resizeMode="contain"
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={async() => {
-              if(isrecording){
-                    setisrecording(false);
-                    await camera.current.stopRecording()
-              }else{
-                   setisrecording(true)
-                   takeVideo()
+            onPress={async () => {
+              if (isrecording) {
+                setisrecording(false);
+                await camera.current.stopRecording();
+              } else {
+                setisrecording(true);
+                takeVideo();
               }
-            
             }}
             style={styles.video}
           >
@@ -258,7 +296,11 @@ export default function LoginScreen() {
         animationIn={"lightSpeedIn"}
         animationOut={"lightSpeedOut"}
         isVisible={modal}
-        onBackButtonPress={savePhoto}
+        onBackButtonPress={()=>{
+          setphotos([])
+          setmodal(false);
+          savePhoto
+        }}
         onBackdropPress={() => {
           setmodal(false);
         }}
@@ -266,6 +308,16 @@ export default function LoginScreen() {
         coverScreen
         style={{ backgroundColor: "white" }}
       >
+        {photos?.length>0?
+        <View style={styles.container}>
+          <FlatList
+          data={photos}
+          renderItem={renderPhotos}
+           numColumns={4}
+            showsVerticalScrollIndicator={false}
+          />
+
+        </View>:
         <View style={styles.container}>
           <Image
             source={{ uri: `file://+${image}` }}
@@ -311,7 +363,25 @@ export default function LoginScreen() {
                 Delete
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{ flexDirection: "row" }}>
+            <TouchableOpacity onPress={async()=>{
+              try {
+      const result = await Share.share({
+        message:
+          'Camera App',
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+            }} style={{ flexDirection: "row" }}>
               <Image
                 source={require("../../../assets/images/Copy.png")}
                 resizeMode="contain"
@@ -323,7 +393,7 @@ export default function LoginScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View>}
       </ReactNativeModal>
     </>
   );

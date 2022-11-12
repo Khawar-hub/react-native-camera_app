@@ -62,5 +62,13 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     flexDirection: "row",
   },
+  imageBorder: {
+    margin: 1,
+    borderWidth: 0.1,
+  },
+  image: {
+    width: width(25),
+    height: width(25),
+  },
 });
 export default styles;
