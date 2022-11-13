@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Modal,
   PermissionsAndroid,
+
   Alert,
   FlatList,
   Share,
@@ -27,29 +28,50 @@ export default function LoginScreen() {
   const dispatch = useDispatch();
   const [image, setImage] = useState(null);
   const [modal, setmodal] = useState(false);
+  const[timer,showTimer]=useState(false)
+  const[box,showBox]=useState(false)
+  const[count,setcount]=useState(10)
   const [isrecording, setisrecording] = useState(false);
   const [flash, setflash] = useState("off");
-  const [toggle,settoggle]=useState(false)
+  const [toggle, settoggle] = useState(false);
   const [zoom, setzoom] = useState(0);
-  const[photos,setphotos]=useState([])
-  const device = toggle?devices.front: devices.back;
-   React.useEffect(() => {
-     getPermission();
-   }, []);
-   const getPermission = async () => {
-
-   
-       const newCameraPermission = await Camera.requestCameraPermission();
-       const newMicrophonePermission =
-         await Camera.requestMicrophonePermission();
-     
-   };
+  const [photos, setphotos] = useState([]);
+  const device = toggle ? devices.front : devices.back;
+  
+  React.useEffect(() => {
+    getPermission();
+  }, []);
+  const getPermission = async () => {
+    const newCameraPermission = await Camera.requestCameraPermission();
+    const newMicrophonePermission = await Camera.requestMicrophonePermission();
+  };
+  let i=10;
   const takePhoto = async () => {
+    if(timer){
+        let interval = setInterval(async() => {
+           i--;
+          setcount(i)
+           if(i===0)
+        {
+          clearInterval(interval)
+          const photo = await camera.current.takePhoto({
+            flash: flash,
+          });
+          setImage(photo?.path);
+          setmodal(true);
+          showTimer(false)
+
+        }
+        }, 1000);
+       
+    }
+    else{
     const photo = await camera.current.takePhoto({
       flash: flash,
     });
     setImage(photo?.path);
     setmodal(true);
+  }
   };
   const savePhoto = async () => {
     const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
@@ -61,44 +83,46 @@ export default function LoginScreen() {
     } else {
       const status = await PermissionsAndroid.request(permission);
       if (status == "granted") {
-       CameraRoll.save(image);
-          setmodal(false);
-         
-        } else {
-          Alert.alert("Permission denied");
-        }
+        CameraRoll.save(image);
+        setmodal(false);
+      } else {
+        Alert.alert("Permission denied");
       }
     }
-  const takeVideo=()=>{
+  };
+  const takeVideo = () => {
     camera.current.startRecording({
       flash: flash,
-      onRecordingFinished: (video) => {CameraRoll.save(video?.path)},
-      onRecordingError: (error) => {Alert.alert('Video stopped')},
+      onRecordingFinished: (video) => {
+        CameraRoll.save(video?.path);
+      },
+      onRecordingError: (error) => {
+        Alert.alert("Video stopped");
+      },
     });
-  }
-const getPhotos=async()=>{
+  };
+  const getPhotos = async () => {
     CameraRoll.getPhotos({
       first: 100,
       assetType: "Photos",
     })
       .then((r) => {
-       setphotos(r.edges)
+        setphotos(r.edges);
       })
       .catch((err) => {
         //Error Loading Images
       });
-
-}
- const renderPhotos = ({item,index}) => {
+  };
+  const renderPhotos = ({ item, index }) => {
     return (
       <TouchableOpacity
-      key={index}
+        key={index}
         activeOpacity={0.8}
-       
-        style={styles.imageBorder}>
+        style={styles.imageBorder}
+      >
         <Image
           style={styles.image}
-          source={{uri: item.node.image.uri}}
+          source={{ uri: item.node.image.uri }}
           resizeMode="cover"
         />
       </TouchableOpacity>
@@ -117,8 +141,69 @@ const getPhotos=async()=>{
           enableZoomGesture
           photo={true}
           zoom={zoom}
-          
         />
+        {box ? (
+          <View
+            style={{
+              height: height(15),
+              width: width(40),
+              backgroundColor: "silver",
+              borderRadius: width(3),
+              position: "absolute",
+              justifyContent: "space-between",
+              right: width(7),
+              bottom: height(14),
+              zIndex: 1000000000,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                showTimer(!timer);
+                showBox(false);
+              }}
+              style={{
+                height: height(7.5),
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                paddingLeft: width(5),
+                alignItems: "center",
+              }}
+            >
+              <Image
+                source={require("../../../assets/images/Tumer_fill.png")}
+                resizeMode="contain"
+              />
+              <Text
+                style={{ color: "#000", marginLeft: width(2), fontSize: 14 }}
+              >
+                Self Timer
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                height: height(7.5),
+                width: "100%",
+                flexDirection: "row",
+                alignItems: "flex-start",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                paddingLeft: width(5),
+                alignItems: "center",
+              }}
+            >
+              <Image
+                source={require("../../../assets/images/Setting_line.png")}
+                resizeMode="contain"
+              />
+              <Text
+                style={{ color: "#000", marginLeft: width(2), fontSize: 14 }}
+              >
+                Settings
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
         {isrecording && (
           <View
             style={{
@@ -141,6 +226,28 @@ const getPhotos=async()=>{
             </View>
           </View>
         )}
+        {timer && (
+          <View
+            style={{
+              position: "absolute",
+              top: height(5),
+              alignSelf: "center",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Image
+                source={require("../../../assets/images/Tumer_fill.png")}
+                resizeMode="contain"
+                style={{ tintColor: "red" }}
+              />
+              <Text
+                style={{ color: "red", fontSize: 17, marginLeft: width(3) }}
+              >
+                {count} Seconds
+              </Text>
+            </View>
+          </View>
+        )}
 
         <View
           style={{
@@ -157,16 +264,20 @@ const getPhotos=async()=>{
             justifyContent: "center",
           }}
         >
-          <TouchableOpacity onPress={()=>{
-            settoggle(!toggle)
-
-          }} style={styles.rotate}>
+          <TouchableOpacity
+            disabled={timer && isrecording}
+            onPress={() => {
+              settoggle(!toggle);
+            }}
+            style={styles.rotate}
+          >
             <Image
               source={require("../../../assets/images/circle_right_alt.png")}
               resizeMode="contain"
             />
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={timer && isrecording}
             onPress={() => {
               if (flash == "off") {
                 setflash("on");
@@ -199,6 +310,7 @@ const getPhotos=async()=>{
             )}
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={timer}
             onPress={() => {
               setzoom(zoom + 1.5);
             }}
@@ -210,6 +322,7 @@ const getPhotos=async()=>{
             />
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={timer}
             onPress={() => {
               if (zoom != 0) setzoom(zoom - 1.5);
             }}
@@ -241,17 +354,21 @@ const getPhotos=async()=>{
             bottom: 0,
           }}
         >
-          <TouchableOpacity onPress={()=>{
-
-            getPhotos()
-            setmodal(true)
-            }} style={styles.gallery}>
+          <TouchableOpacity
+            disabled={timer && isrecording}
+            onPress={() => {
+              getPhotos();
+              setmodal(true);
+            }}
+            style={styles.gallery}
+          >
             <Image
               source={require("../../../assets/images/picture.png")}
               resizeMode="contain"
             />
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={timer}
             onPress={async () => {
               if (isrecording) {
                 setisrecording(false);
@@ -291,7 +408,13 @@ const getPhotos=async()=>{
               elevation: 20,
             }}
           >
-            <TouchableOpacity style={styles.more}>
+            <TouchableOpacity
+              disabled={timer && isrecording}
+              onPress={() => {
+                showBox(!box);
+              }}
+              style={styles.more}
+            >
               <Image
                 source={require("../../../assets/images/More.png")}
                 resizeMode="contain"
@@ -306,10 +429,10 @@ const getPhotos=async()=>{
         animationIn={"lightSpeedIn"}
         animationOut={"lightSpeedOut"}
         isVisible={modal}
-        onBackButtonPress={()=>{
-          setphotos([])
+        onBackButtonPress={() => {
+          setphotos([]);
           setmodal(false);
-          savePhoto
+          savePhoto;
         }}
         onBackdropPress={() => {
           setmodal(false);
@@ -318,92 +441,95 @@ const getPhotos=async()=>{
         coverScreen
         style={{ backgroundColor: "white" }}
       >
-        {photos?.length>0?
-        <View style={styles.container}>
-          <FlatList
-          data={photos}
-          renderItem={renderPhotos}
-           numColumns={4}
-            showsVerticalScrollIndicator={false}
-          />
-
-        </View>:
-        <View style={styles.container}>
-          <Image
-            source={{ uri: `file://+${image}` }}
-            resizeMode="cover"
-            style={{ height: height(100), width: width(100), zIndex: 1 }}
-          />
-          <View
-            style={{
-              height: height(10),
-              position: "absolute",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingHorizontal: width(14),
-              alignItems: "center",
-              zIndex: 100000,
-              width: width(100),
-              backgroundColor: "#00000020",
-              bottom: 0,
-            }}
-          >
-            <TouchableOpacity
-              onPress={savePhoto}
-              style={[styles.more, { marginTop: height(0.4) }]}
-            >
-              <Image
-                source={require("../../../assets/images/Code.png")}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setmodal(false);
-              }}
-              style={{ flexDirection: "row" }}
-            >
-              <Image
-                source={require("../../../assets/images/Folder.png")}
-                resizeMode="contain"
-              />
-              <Text
-                style={{ fontSize: 15, color: "white", marginLeft: width(1) }}
-              >
-                Delete
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={async()=>{
-              try {
-      const result = await Share.share({
-        message:
-          'Camera App',
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error) {
-      alert(error.message);
-    }
-            }} style={{ flexDirection: "row" }}>
-              <Image
-                source={require("../../../assets/images/Copy.png")}
-                resizeMode="contain"
-              />
-              <Text
-                style={{ fontSize: 15, color: "white", marginLeft: width(1) }}
-              >
-                Share
-              </Text>
-            </TouchableOpacity>
+        {photos?.length > 0 ? (
+          <View style={styles.container}>
+            <FlatList
+              data={photos}
+              renderItem={renderPhotos}
+              numColumns={4}
+              showsVerticalScrollIndicator={false}
+            />
           </View>
-        </View>}
+        ) : (
+          <View style={styles.container}>
+            <Image
+              source={{ uri: `file://+${image}` }}
+              resizeMode="cover"
+              style={{ height: height(100), width: width(100), zIndex: 1 }}
+            />
+            <View
+              style={{
+                height: height(10),
+                position: "absolute",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                paddingHorizontal: width(14),
+                alignItems: "center",
+                zIndex: 100000,
+                width: width(100),
+                backgroundColor: "#00000020",
+                bottom: 0,
+              }}
+            >
+              <TouchableOpacity
+                onPress={savePhoto}
+                style={[styles.more, { marginTop: height(0.4) }]}
+              >
+                <Image
+                  source={require("../../../assets/images/Code.png")}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setmodal(false);
+                }}
+                style={{ flexDirection: "row" }}
+              >
+                <Image
+                  source={require("../../../assets/images/Folder.png")}
+                  resizeMode="contain"
+                />
+                <Text
+                  style={{ fontSize: 15, color: "white", marginLeft: width(1) }}
+                >
+                  Delete
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={async () => {
+                  try {
+                    const result = await Share.share({
+                      message: "Camera App",
+                    });
+                    if (result.action === Share.sharedAction) {
+                      if (result.activityType) {
+                        // shared with activity type of result.activityType
+                      } else {
+                        // shared
+                      }
+                    } else if (result.action === Share.dismissedAction) {
+                      // dismissed
+                    }
+                  } catch (error) {
+                    alert(error.message);
+                  }
+                }}
+                style={{ flexDirection: "row" }}
+              >
+                <Image
+                  source={require("../../../assets/images/Copy.png")}
+                  resizeMode="contain"
+                />
+                <Text
+                  style={{ fontSize: 15, color: "white", marginLeft: width(1) }}
+                >
+                  Share
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </ReactNativeModal>
     </>
   );
