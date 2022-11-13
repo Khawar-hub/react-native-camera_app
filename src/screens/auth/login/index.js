@@ -22,7 +22,8 @@ import { useDispatch } from "react-redux";
 import ReactNativeModal from "react-native-modal";
 import RNFS from "react-native-fs";
 import CameraRoll from "@react-native-community/cameraroll";
-export default function LoginScreen() {
+import ScreenNames from "~routes/routes";
+export default function LoginScreen({navigation}) {
   const devices = useCameraDevices("wide-angle-camera");
   const camera = useRef(null);
   const dispatch = useDispatch();
@@ -181,6 +182,10 @@ export default function LoginScreen() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+            onPress={()=>{
+              navigation.navigate(ScreenNames.HOME)
+               showBox(false);
+            }}
               style={{
                 height: height(7.5),
                 width: "100%",

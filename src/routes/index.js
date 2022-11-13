@@ -19,11 +19,18 @@ export default function Routes() {
     <NavigationContainer>
       <Loader />
       {!isLogin ? (
-        <Stack.Navigator initialRouteName={ScreenNames.LOGIN} screenOptions={{ header: () => false }}>
+        <Stack.Navigator
+          initialRouteName={ScreenNames.LOGIN}
+          screenOptions={{ header: () => false }}
+        >
           <Stack.Screen name={ScreenNames.LOGIN} component={LoginScreen} />
+          <Stack.Screen name={ScreenNames.HOME} component={HomeScreen} />
         </Stack.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName={ScreenNames.HOME} screenOptions={{ header: () => false }}>
+        <Stack.Navigator
+          initialRouteName={ScreenNames.HOME}
+          screenOptions={{ header: () => false }}
+        >
           <Stack.Screen name={ScreenNames.HOME} component={HomeScreen} />
         </Stack.Navigator>
       )}
