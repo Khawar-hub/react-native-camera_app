@@ -39,18 +39,31 @@ const styles = StyleSheet.create({
   },
   gallery: {
     position: "absolute",
-    top: height(3.4),
-    left: width(5),
+    top: height(2.8),
+    left: width(7),
   },
   video: {
     position: "absolute",
-    top: height(3.4),
+    top: height(2.8),
     right: width(16),
   },
   more: {
     position: "absolute",
-    top: height(2.8),
-    left: width(2),
+    
+    height: width(18.5),
+    alignItems: "flex-end",
+    justifyContent: "center",
+    paddingRight:width(1),
+    borderWidth: 2,
+
+    borderColor: "#00000030",
+
+    width: width(19),
+    borderRadius: width(20),
+    position: "absolute",
+    top: height(0),
+    left: -width(9),
+    elevation: 40,
   },
   container: {
     backgroundColor: AppColors.white,

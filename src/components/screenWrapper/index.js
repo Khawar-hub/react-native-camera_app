@@ -14,21 +14,24 @@ const ScreenWrapper = ({
   headerUnScrollable = () => null,
   footerUnScrollable = () => null,
   barStyle = 'dark-content',
+  hidden
 }) => {
   function FocusAwareStatusBar(props) {
     const isFocused = useIsFocused();
-    return isFocused ? <StatusBar {...props} /> : null;
+    return isFocused ? <StatusBar hidden={hidden} {...props} /> : null;
   }
   const content = () => {
     return (
       <View style={[styles.container, {backgroundColor: backgroundColor}]}>
         <FocusAwareStatusBar
+          
           barStyle={barStyle}
           backgroundColor={statusBarColor}
           translucent={transclucent}
         />
         {!transclucent && (
           <SafeAreaView
+           
             style={(styles.container, {backgroundColor: statusBarColor})}
           />
         )}
