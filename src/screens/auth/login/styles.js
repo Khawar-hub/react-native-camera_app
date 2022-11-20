@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   more: {
     position: "absolute",
     
-    height: width(18.5),
+    height: width(16),
     alignItems: "flex-end",
     justifyContent: "center",
     paddingRight:width(1),
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     borderRadius: width(20),
     position: "absolute",
     top: height(0),
-    left: -width(9),
+    left: -width(10),
     elevation: 40,
   },
   container: {

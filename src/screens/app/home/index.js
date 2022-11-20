@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Image, Switch } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { useDispatch, useSelector } from "react-redux";
+
 import { Button, ScreenWrapper } from "~components";
-import { setAppLoader } from "~redux/slices/config";
-import { selectUserMeta, setIsLoggedIn, setUserMeta } from "~redux/slices/user";
+
+
 import { height, width } from "~utills/Dimension";
 import styles from "./styles";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 export default function Home({ navigation, route }) {
-  const dispatch = useDispatch();
-  const userInfo = useSelector(selectUserMeta);
+
   const [image, setimage] = useState(1);
   const [value, setValue] = useState(false);
   const [video, setvideo] = useState(0.2);

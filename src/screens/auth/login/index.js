@@ -19,10 +19,7 @@ import { Camera, useCameraDevices } from "react-native-vision-camera";
 import { Button, ScreenWrapper } from "~components";
 import { height, width } from "~utills/Dimension";
 import styles from "./styles";
-import { setAppLoader } from "~redux/slices/config";
-import { useDispatch } from "react-redux";
 import ReactNativeModal from "react-native-modal";
-import RNFS from "react-native-fs";
 import CameraRoll from "@react-native-community/cameraroll";
 import ScreenNames from "~routes/routes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,7 +28,6 @@ import { useIsFocused } from "@react-navigation/native";
 export default function LoginScreen({navigation}) {
   const devices = useCameraDevices("wide-angle-camera");
   const camera = useRef(null);
-  const dispatch = useDispatch();
   const [image, setImage] = useState(null);
   const [modal, setmodal] = useState(false);
   const[timer,showTimer]=useState(false)
@@ -43,8 +39,6 @@ export default function LoginScreen({navigation}) {
   const [zoom, setzoom] = useState(0);
   const [photos, setphotos] = useState([]);
   const device = toggle ? devices.front: devices.back;
-  const [imageRes,setImageRes]=useState(null)
-  const [videoRes,setVideoRes]=useState(null)
   const[preview,setpreview]=useState(false)
   const focus=useIsFocused()
  
@@ -97,7 +91,9 @@ export default function LoginScreen({navigation}) {
           });
           setImage(photo?.path);
           setmodal(true);
+          setcount(10)
           showTimer(false)
+          
 
         }
         }, 1000);
@@ -155,21 +151,7 @@ export default function LoginScreen({navigation}) {
       }
     });
   };
-  const renderPhotos = ({ item, index }) => {
-    return (
-      <TouchableOpacity
-        key={index}
-        activeOpacity={0.8}
-        style={styles.imageBorder}
-      >
-        <Image
-          style={styles.image}
-          source={{ uri: item.node.image.uri }}
-          resizeMode="cover"
-        />
-      </TouchableOpacity>
-    );
-  };
+  
   if (device == null) return <ActivityIndicator size={10} color="red" />;
   return (
     <>
@@ -179,7 +161,7 @@ export default function LoginScreen({navigation}) {
             ref={camera}
             style={StyleSheet.absoluteFill}
             device={device}
-            video={false}
+            video={true}
             isActive={true}
             enableZoomGesture
             photo={true}
@@ -773,7 +755,7 @@ export default function LoginScreen({navigation}) {
                     justifyContent: "space-between",
                     paddingHorizontal: width(14),
                     alignItems: "center",
-                    paddingBottom: height(2),
+                    paddingBottom: height(2.5),
                     zIndex: 100000,
                     width: width(100),
                     backgroundColor: "#00000020",
